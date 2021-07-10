@@ -1,0 +1,56 @@
+use std::collections::HashMap;
+use std::io;
+
+fn insercion_ordenada(lista_empleados: &mut Vec<String>, empleado_nuevo: &String) {
+    lista_empleados.insert(0, empleado_nuevo.to_string());
+    lista_empleados.sort();
+}
+
+fn add_employed(name: &String, departament: &String, empresa: &mut HashMap<String, Vec<String>>) {
+    if empresa.contains_key(departament) {
+        insercion_ordenada(&mut empresa.get(departament).unwrap().to_vec(), name);
+    } else {
+        empresa
+            .entry(departament.to_string())
+            .or_insert(vec![name.to_string()]);
+    }
+}
+
+fn listar_empleados(empresa: &mut HashMap<String, Vec<String>>, departament: &String) {
+    println!("{:?}", empresa.get(departament).iter());
+}
+
+fn prompt() {
+    let mut empresa: HashMap<String, Vec<String>> = HashMap::new();
+    let words: Vec<String> = Vec::new();
+    loop {
+        println!("Comandos para trabajar con este programa.");
+        println!("Add [Name] to [Departament].");
+        println!("List [Departament] (La inforamcion saldra ordenada).");
+        println!("exit");
+
+        let mut guess = String::new();
+        io::stdin()
+            .read_line(&mut guess)
+            .expect("Failed to read line");
+
+        words.append(guess.split_whitespace().collect::<String>());
+
+        let command: &String = &words[0];
+        println!("{}", command);
+
+        match command.as_str() {
+            "Add" => add_employed(&words[1], &words[3], &mut empresa),
+            "List" => listar_empleados(&mut empresa, &words[1]),
+            "exit" => {
+                println!("Saliendo del programa");
+                break;
+            }
+            _ => println!("Opcion no disponible"),
+        }
+    }
+}
+
+fn main() {
+    prompt();
+}
